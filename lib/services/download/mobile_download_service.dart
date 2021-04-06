@@ -21,7 +21,8 @@ import 'package:rxdart/rxdart.dart';
 /// An implementation of a [DownloadService] that handles downloading
 /// of episodes on mobile.
 class MobileDownloadService extends DownloadService {
-  static BehaviorSubject<DownloadProgress> downloadProgress = BehaviorSubject<DownloadProgress>();
+  static BehaviorSubject<DownloadProgress> downloadProgress =
+      BehaviorSubject<DownloadProgress>();
 
   final log = Logger('MobileDownloadService');
 
@@ -29,12 +30,15 @@ class MobileDownloadService extends DownloadService {
   final Repository repository;
   final DownloadManager downloadManager;
 
-  MobileDownloadService({@required this.repository, @required this.downloadManager}) : super(repository: repository) {
+  MobileDownloadService(
+      {@required this.repository, @required this.downloadManager})
+      : super(repository: repository) {
     downloadManager.downloadProgress.pipe(downloadProgress);
     downloadProgress.listen((progress) {
       if (progress.status == DownloadState.downloaded) {
         _saveDownload(progress);
-        FlutterDownloader.remove(taskId: progress.id, shouldDeleteContent: false);
+        FlutterDownloader.remove(
+            taskId: progress.id, shouldDeleteContent: false);
       }
     });
   }
@@ -56,16 +60,21 @@ class MobileDownloadService extends DownloadService {
         episode = savedEpisode;
       }
 
-      final downloadPath = join(await getStorageDirectory(), safePath(episode.podcast));
+      final downloadPath =
+          join(await getStorageDirectory(), safePath(episode.podcast));
       var uri = Uri.parse(episode.contentUrl);
 
       // Ensure the download directory exists
       Directory(downloadPath).createSync(recursive: true);
 
       // Filename should be last segment of URI.
-      var filename = safeFile(uri.pathSegments.lastWhere((e) => e.toLowerCase().endsWith('.mp3'), orElse: () => null));
+      var filename = safeFile(uri.pathSegments.lastWhere(
+          (e) => e.toLowerCase().endsWith('.mp3'),
+          orElse: () => null));
 
-      filename ??= safeFile(uri.pathSegments.lastWhere((e) => e.toLowerCase().endsWith('.m4a'), orElse: () => null));
+      filename ??= safeFile(uri.pathSegments.lastWhere(
+          (e) => e.toLowerCase().endsWith('.m4a'),
+          orElse: () => null));
 
       if (filename == null) {
         //TODO: Handle unsupported format.
@@ -86,14 +95,17 @@ class MobileDownloadService extends DownloadService {
         var pubDate = '';
 
         if (episode.publicationDate != null) {
-          pubDate = '${episode.publicationDate.millisecondsSinceEpoch ~/ 1000}-';
+          pubDate =
+              '${episode.publicationDate.millisecondsSinceEpoch ~/ 1000}-';
         }
 
         filename = '$season$epno$pubDate$filename';
 
-        log.fine('Download episode (${episode?.title}) $filename to $downloadPath');
+        final taskId = await downloadManager.enqueTask(
+            episode.contentUrl, downloadPath, filename);
 
-        final taskId = await downloadManager.enqueTask(episode.contentUrl, downloadPath, filename);
+        log.fine(
+            'Download episode (${episode?.title}) $filename to $downloadPath ($taskId)');
 
         // Update the episode with download data
         episode.filepath = downloadPath;
@@ -125,7 +137,8 @@ class MobileDownloadService extends DownloadService {
 
       if (progress.percentage == 100) {
         if (await hasStoragePermission()) {
-          final filename = join(await getStorageDirectory(), safePath(episode.podcast), episode.filename);
+          final filename = join(await getStorageDirectory(),
+              safePath(episode.podcast), episode.filename);
 
           // If we do not have a duration for this file - let's calculate it
           if (episode.duration == 0) {
