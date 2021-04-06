@@ -137,6 +137,7 @@ class _SettingsState extends State<Settings> {
   Widget build(context) {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
+      case TargetPlatform.macOS:
         return _buildAndroid(context);
       case TargetPlatform.iOS:
         return _buildIos(context);
