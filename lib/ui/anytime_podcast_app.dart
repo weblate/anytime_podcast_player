@@ -46,6 +46,7 @@ import 'package:anytime/ui/widgets/search_slide_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
+import 'package:flutter_gen/gen_l10n/messages_all.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
@@ -200,7 +201,7 @@ class AnytimePodcastAppState extends State<AnytimePodcastApp> {
         title: 'Anytime Podcast Player',
         navigatorObservers: [NavigationRouteObserver()],
         localizationsDelegates: [
-          const LocalisationsDelegate(),
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
